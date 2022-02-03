@@ -1,0 +1,35 @@
+version: '3.2'
+
+services:
+  postgres:
+      image: postgres:10
+      volumes:
+      - "/var/run/postgres/postgres.sock:/var/run/postgres/postgres.sock"
+      - "dbdata:/var/lib/postgresql/data"
+      environment:
+          - POSTGRES_USER=event
+          - POSTGRES_PASSWORD=event
+          - POSTGRES_DB=event_book
+      ports:
+      - 5432:5432
+      networks:
+        - microservices
+  info:
+    build: .
+    volumes:
+      - ./:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    env_file:
+      - event_book/.env
+    networks:
+      - microservices
+
+
+volumes:
+  dbdata:
+
+networks:
+  microservices:
