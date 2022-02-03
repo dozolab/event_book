@@ -1,5 +1,5 @@
 # QIWI Test Task
-Simple test task for event and person and coupon! Written
+Simple test task for event and person and coupon!
  Written in [Aiohttp](https://docs.aiohttp.org/en/stable/)
 
 ## Getting Started
