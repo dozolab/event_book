@@ -13,7 +13,8 @@ async def person_list(request):
     async with request.app['db'].acquire() as conn:
         person = await db.get_person_list(conn=conn)
         person = [dict(q) for q in person]
-        return web.Response(text=json.dumps(person))
+
+        return web.Response(body=json.dumps(person), content_type='json')
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -28,19 +29,22 @@ async def event_list(request):
     async with request.app['db'].acquire() as conn:
         event = await db.get_event_list(conn=conn)
         event = [dict(q) for q in event]
-        return web.Response(text=json.dumps(event, cls=DateTimeEncoder))
+        return web.Response(body=json.dumps(event, cls=DateTimeEncoder),  content_type='json')
 
 
 async def coupon_list(request):
     async with request.app['db'].acquire() as conn:
         event = await db.get_coupon_list(conn=conn)
         event = [dict(q) for q in event]
-        return web.Response(text=json.dumps(event, cls=DateTimeEncoder))
+        return web.Response(body=json.dumps(event, cls=DateTimeEncoder),  content_type='json')
 
 
 async def login(request):
     if request.method == 'POST':
-        data = await request.json()
+        try:
+            data = await request.json()
+        except json.decoder.JSONDecodeError:
+            return web.Response(body=json.dumps({"error": "You send username and password on request body!"}), status=400,  content_type='json')
         try:
             username = data['username']
             password = data['password']
@@ -52,4 +56,4 @@ async def login(request):
             return web.Response(text=json.dumps({"client_token": str(client_token)}), status=201)
         return web.Response(text=json.dumps({"error": "wrong credintials"}), status=403)
     else:
-        return web.Response(text=json.dumps({"error": "Get method is not allowed"}), status=400)
+        return web.Response(body=json.dumps({"error": "Get method is not allowed"}), status=400,  content_type='json')

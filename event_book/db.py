@@ -68,7 +68,7 @@ async def pg_context(app):
 
 
 async def get_person_list(conn):
-    stmt = 'SELECT person.* , COUNT(coupon.id) as events_count from person , coupon where person.id=coupon.person_id group by person.id ORDER BY events_count DESC '
+    stmt = 'SELECT person.* , COUNT(coupon.id) as events_count from person , coupon where person.id=coupon.person_id group by person.id HAVING COUNT(coupon.id) > 3 ORDER BY events_count DESC '
     result = await conn.execute(stmt)
     question_record = await result.fetchall()
     return question_record
